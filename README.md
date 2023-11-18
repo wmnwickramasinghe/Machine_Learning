@@ -6,7 +6,7 @@ Welcome to the R Machine Learning Projects repository, a comprehensive collectio
 
 k-Nearest Neighbors (KNN): In this project on k-Nearest Neighbors (KNN), the model is fitted with varying values of K. The training and test error rates are plotted against K, revealing insights into model performance. The analysis aims to identify the optimal K value, assessing its associated training and test error rates. Additionally, a visual representation of the training data is presented, including the decision boundary for the optimal K, prompting observations and reflections on the model's overall interpretability and performance.
 
-Logistic and Linear Regression: Gain insights into logistic and linear regression through practical projects that cover topics such as binary classification, probability estimation, and linear relationships.
+Linear Regression: A comprehensive approach to constructing a reliable linear regression model is the primary focus of this project. It begins with an exploratory analysis of the dataset, followed by the identification of necessary transformations. Subset selection techniques are applied to determine the optimal model, and model assumptions are evaluated to ensure reliability. Finally, the model is utilized for predictive purposes, resulting in a systematic and comprehensive approach to linear regression modeling.
 
 Discriminant Analysis (LDA, QDA): Delve into the projects focusing on Linear Discriminant Analysis (LDA) and Quadratic Discriminant Analysis (QDA) for effective classification in multivariate datasets.
 
