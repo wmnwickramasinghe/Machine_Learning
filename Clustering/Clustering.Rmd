@@ -1,0 +1,140 @@
+---
+title: "Clustering"
+output: 
+    bookdown::pdf_document2:
+       toc: false
+       number_sections: false
+       extra_dependencies: ["flafter"]
+header-includes: 
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
+  - \usepackage{subfig}
+  - \usepackage{graphicx}
+  - \usepackage{multicol}
+  - \newcommand{\btwocol}{\begin{multicols}{2}}
+  - \newcommand{\etwocol}{\end{multicols}}
+urlcolor: blue
+geometry: "left=1cm,right=1cm,top=1cm,bottom=1.5cm"
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = ""
+)
+```
+
+***This project involves Hitters dataset from the ISLR package in R. It consists of 20 variables measured on 263 major league baseball players (after removing those with missing data). Salary is the response variable and the remaining 19 are predictors. Some of
+the predictor variables are categorical with two classes. Our goal is to clustering the players.***
+
+&nbsp;
+
+```{r echo=TRUE}
+library(ISLR)
+str(Hitters)
+Hitters <- na.omit(Hitters)
+dim(Hitters)
+```
+
+```{r echo=TRUE}
+Hitters.X<-Hitters[-19]
+Hitters.X$League<-ifelse(Hitters.X$League=="A",0,1)
+Hitters.X$Division<-ifelse(Hitters.X$Division=="E",0,1)
+Hitters.X$NewLeague<-ifelse(Hitters.X$NewLeague=="A",0,1)
+```
+
+&nbsp;
+
+a) Standardizing depends on the given application. It may well be that some variables are intrinsically more important than others in a particular application, and then the assignment of weights should be based on subject-matter Knowledge and in that case standardizing is not recomended. In some applications, changing the measurement units may even lead one to see a very different clustering structure. To avoid this dependence on the choice of measurement units, one has the option of standardizing the data. This converts the original measurements to unitless variables.In the given dataset Hitters, the variables are measured in different scales. Hence it is a good idea to standardize the variables.
+
+&nbsp;
+
+b) Most of the features in Hitters data are not highly correlated. Therefore metric – based distance measurements are more suitable for this data.
+
+&nbsp;
+
+c) Complete linkage. We selected 2 clusters and cluster 1 has 233 players and cluster 2 has 30 players. The second cluster means of the variables are higher than the first cluster means of the variables. The mean salary of the second cluster is higher than the first cluster Except Assist and Error.
+
+&nbsp;
+
+```{r, echo=TRUE}
+xsc <- scale(Hitters.X)
+xsc.hc.complete <- hclust(dist(xsc), method = "complete")
+cut.tree<-cutree(xsc.hc.complete, 2)
+```
+
+```{r,echo=TRUE,fig.height=5,fig.width=20,fig.align="center",fig.cap="Hierarchical Clustering for Hitters Data"}
+plot(xsc.hc.complete, main = "", xlab = "", sub = "", cex = 0.3)
+```
+```{r include=FALSE}
+#means for first cluster
+cluster1.mu<-apply(Hitters.X[cut.tree==1,],2,mean)
+cluster2.mu<-apply(Hitters.X[cut.tree==2,],2,mean)
+tab.mu<-rbind(cluster1.mu,cluster2.mu)
+```
+
+```{r,results="asis", echo=TRUE}
+library(xtable)
+print(xtable(tab.mu[,1:10]),table.placement="H")
+print(xtable(tab.mu[,11:19],caption = "Cluster means"),table.placement="H")
+```
+
+```{r echo=TRUE}
+# mean salary of the players in the two clusters
+cluster1.sal<-mean(Hitters$Salary[cut.tree==1])
+cluster2.sal<-mean(Hitters$Salary[cut.tree==2])
+```
+
+```{r,results="asis", echo=TRUE}
+tab.salary<-rbind(cluster1.sal,cluster2.sal)
+colnames(tab.salary)<-"Mean Salary"
+rownames(tab.salary)<-c("Cluster 1","Cluster 2")
+print(xtable(tab.salary,caption = "Mean salary of the players in the two clusters"),table.placement="H")
+```
+
+&nbsp;
+
+d) K-means clustering.  We selected K=2 clusters and cluster 1 has 189 players and cluster 2 has 74 players. The second cluster means of the variables are higher than the first cluster means of the variables. The mean salary of the second cluster is higher than the first cluster except League, Division, Assists,Errors and NewLeague.
+
+&nbsp;
+
+```{r echo=TRUE}
+# K-means with K = 2
+set.seed(1)
+km.out <- kmeans(xsc, 2, nstart = 20)
+cut.km<-km.out$cluster
+
+# Cluster means of the variables
+# 1st cluster means of the variables
+km.cluster1<-apply(Hitters.X[cut.km==1,],2,mean)
+
+# 2nd cluster means of the variables
+km.cluster2<-apply(Hitters.X[cut.km==2,],2,mean)
+```
+
+```{r,results="asis", echo=TRUE}
+km.mean.tab<-rbind(km.cluster1,km.cluster2)
+print(xtable(km.mean.tab[,1:10]),table.placement="H")
+print(xtable(km.mean.tab[,11:19],caption = "Cluster means of the variables (K-means)"),table.placement="H")
+```
+
+```{r echo=TRUE}
+# mean salary of the players in the two clusters
+km.cluster1.sal<-mean(Hitters$Salary[cut.km==1])
+km.cluster2.sal<-mean(Hitters$Salary[cut.km==2])
+```
+
+```{r,results="asis", echo=TRUE}
+tab.salary1<-rbind(km.cluster1.sal,km.cluster2.sal)
+colnames(tab.salary1)<-"Mean Salary"
+rownames(tab.salary1)<-c("Cluster 1","Cluster 2")
+print(xtable(tab.salary1,caption = "Mean salary of the players in the two clusters"),table.placement="H")
+```
+
+&nbsp;
+
+e) According to the above results both clustering methods give relatively similar results. Therefore identifying the better algorithm that gives more sensible results would be a difficult choice.
+
