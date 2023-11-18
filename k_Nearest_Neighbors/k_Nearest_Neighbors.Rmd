@@ -1,18 +1,15 @@
 ---
 title: "k Nearest Neighbors"
-author: "Nisansala Wickramasinghe"
-date: "2023-11-18"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-setwd("/Users/nissi_wicky/Desktop/Projects copy/toGitHub/k_Nearest_Neighbors")
 ```
 
 Consider the training and test data.
 
-a) KNN is fitted for K = 1, 6, $\dots$ 200 and the code is presented in the R code section.
+a) KNN is fitted for K = 1, 6, $\dots$ 200.
 
 &nbsp;
 
