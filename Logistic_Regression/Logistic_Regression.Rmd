@@ -1,0 +1,161 @@
+---
+title: "Logistic Regression"
+output: 
+    bookdown::pdf_document2:
+       toc: false
+       number_sections: false
+       extra_dependencies: ["flafter"]
+header-includes: 
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
+  - \usepackage{subfig}
+  - \usepackage{graphicx}
+  - \usepackage{multicol}
+  - \newcommand{\btwocol}{\begin{multicols}{2}}
+  - \newcommand{\etwocol}{\end{multicols}}
+urlcolor: blue
+geometry: "left=1cm,right=1cm,top=1cm,bottom=1.5cm"
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = ""
+)
+```
+
+***Consider the diabetes dataset. We will take Outcome as the response, the other variables as predictors. We will build a reasonably good" logistic regression model for these data.***
+
+a) **Figure** \@ref(fig:q1a) shows the boxplots of `Outcome` as a function of other predictor variables. Based on the plots it can be observe that all the predictors will be helpfull when separating patients with diabities and without diabities as there is a difference between distributions of patients with diabities and other for every predictor. Among them `Pregancy`, `Glucose`, `Insulin` and `Age` will be really helpful.
+
+&nbsp;
+
+
+```{r echo=TRUE}
+library(car)
+library(lmtest)
+library(ggplot2)
+library(ISLR)
+library(MASS)
+```
+
+```{r echo=TRUE}
+diab<-read.csv("diabetes.csv")
+head(diab)
+diab$Outcome<-as.factor(diab$Outcome)
+names(diab)<-c("Pregnancies","Glucose","BP","Thickness","Insulin","BMI","DPB","Age","Outcome")
+str(diab)
+contrasts(diab$Outcome)
+```
+
+```{r q1a,echo=TRUE,fig.height=2.3, fig.width=8, fig.cap="\\textit{Class conditional distributions for the diabities data.}"}
+
+plot3a<-ggplot(diab, aes(x=Outcome, y=Pregnancies,fill=Outcome)) + 
+    geom_boxplot() + theme(legend.position = "none",axis.title.x = element_text(size=10), axis.title.y = element_text(size=10)) 
+
+plot3b<-ggplot(diab, aes(x=Outcome, y=Glucose,fill=Outcome)) + 
+    geom_boxplot() + theme(legend.position = "none",axis.title.x = element_text(size=10), axis.title.y = element_text(size=10)) 
+
+plot3c<-ggplot(diab, aes(x=Outcome, y=BP,fill=Outcome)) + 
+    geom_boxplot() + ylab("Blood Pressure")+ theme(legend.position = "none",axis.title.x = element_text(size=10), axis.title.y = element_text(size=10)) 
+
+plot3d<-ggplot(diab, aes(x=Outcome, y=Thickness,fill=Outcome)) + 
+    geom_boxplot() +  ylab("Skin Thickness") + theme(legend.position = "none",axis.title.x = element_text(size=10), axis.title.y = element_text(size=10)) 
+
+plot3e<-ggplot(diab, aes(x=Outcome, y=Insulin,fill=Outcome)) + 
+    geom_boxplot() + theme(legend.position = "none",axis.title.x = element_text(size=10), axis.title.y = element_text(size=10)) 
+
+plot3f<-ggplot(diab, aes(x=Outcome, y=BMI,fill=Outcome)) + 
+    geom_boxplot() + theme(legend.position = "none",axis.title.x = element_text(size=10), axis.title.y = element_text(size=10)) 
+
+plot3g<-ggplot(diab, aes(x=Outcome, y=DPB,fill=Outcome)) + 
+    geom_boxplot() + ylab("Diabetes Pedigree Function") + theme(legend.position = "none",axis.title.x = element_text(size=10), axis.title.y = element_text(size=10)) 
+
+plot3h<-ggplot(diab, aes(x=Outcome, y=Age,fill=Outcome)) + 
+    geom_boxplot() + theme(legend.position = "none",axis.title.x = element_text(size=10), axis.title.y = element_text(size=10)) 
+
+require(gridExtra)
+grid.arrange(plot3a, plot3b, plot3c, plot3d, plot3e, plot3f, plot3g, plot3h, ncol=8)
+```
+
+```{r echo=TRUE}
+#part b)
+full.model <- glm(Outcome ~ Pregnancies + Glucose + BP + Thickness + Insulin + BMI + DPB + Age, family = binomial, data = diab)
+summary(full.model)
+```
+
+```{r echo=TRUE}
+red.model <- glm(Outcome ~ Pregnancies + Glucose + BP + Insulin + BMI + DPB + Age, family = binomial, data = diab)
+summary(red.model)
+anova(red.model, full.model, test = "Chisq")
+```
+
+```{r echo=TRUE}
+null.model <- glm(Outcome ~ 1, family = binomial, data = diab)
+anova(null.model, red.model, test = "Chisq")
+```
+
+&nbsp;
+
+b) 
+- First, built a **model 1** by taking `Outcome` as response variable and all other variable as predictors.  When testing the significance of j$^{th}$ coefficient: i.e $H_0:\beta_j=0$ vs $H_0:\beta_j \neq 0$, we do not reject the null hypothesis for predictors `Thickness` as its p value is $0.90244$ > 0.05. Thus we can conclude that predictor `Thickness` is not associated with response `Outcome` after adjusting for the other predictors. 
+
+- Then built a **model 2** by removing `Thickness` from the **model 1**. To compare two nested models - full(**model 1**) and reduced(**model 2**), change in deviance statistic is calculated and p value for chisquare test is 0.9024 > 0.05. Therefore, we do not reject null hypothesis ($H_0:$ full model = reduced model) and conclude that **model 2** is pretty much good as the **model 1**. 
+
+- Finally test of model significance for **model 2** was carried by taking null model(model which has a common intercept and no predictors) as the reduced model and **model 2** as the full model. Change in deviance statistic is calculated and p value for chisquare test is $2.2 \times 10^{-16}$ < 0.05. Therefore, we can reject null hypothesis ($H_0:$ full model = reduce model) and conclude that **model 2** is significant. 
+
+&nbsp;
+
+c) Let $p$ be probability of success (probability of getting diabetes). Then the final model: 
+
+$$
+\begin{aligned}
+logit(p) &= -8.0273 + 0.1264Pregnancies + 0.0337Glucose - 0.0096BP - 0.0012Insulin \\
+&+ 0.0779BMI + 0.8895BPB + 0.0129Age
+\end{aligned}
+$$
+
+&nbsp;
+
+- $\exp(0.1264) = 1.13470$. Therefore we expect to see about 13.5% increase in the odds of having diabities, for a one-unit increase in Pregnancies given that other variables held constant..
+
+- $\exp(0.0337) = 1.0342$. Therefore we expect to see about 3% increase in the odds of having diabities, for a one-unit increase in Glucose given that other variables held constant.
+
+- Training error rate for the model is 0.216
+
+&nbsp;
+
+```{r echo=TRUE}
+#part c)
+CI<-confint(red.model)
+rownames(CI)<-NULL
+std.coef<-coef(summary(red.model))[, "Std. Error"]
+names(std.coef)<-NULL
+est<-cbind(coef(red.model),std.coef,CI)
+colnames(est)<-c("Estimate","Std.Error","2.5%","97.5%")
+```
+
+```{r echo=TRUE, results="asis"}
+library(xtable)
+xtab<-xtable(est,caption="summary of estimates of the regression
+coefficients")
+digits(xtab)<-c(0,4,4,4,4)
+print(xtab,table.placement="H")
+```
+
+```{r echo=TRUE}
+exp(coef(red.model))
+```
+
+
+```{r echo=TRUE}
+pred.prob.diab <- predict(red.model,diab, type = "response")
+pred.diab <- ifelse(pred.prob.diab >= 0.5, "1", "0")
+err.rate = 1 - mean(pred.diab == diab[, "Outcome"])
+```
+
+
+
