@@ -8,6 +8,8 @@ k-Nearest Neighbors (KNN): In this project on k-Nearest Neighbors (KNN), the mod
 
 Linear Regression: A comprehensive approach to constructing a reliable linear regression model is the primary focus of this project. It begins with an exploratory analysis of the dataset, followed by the identification of necessary transformations. Subset selection techniques are applied to determine the optimal model, and model assumptions are evaluated to ensure reliability. Finally, the model is utilized for predictive purposes, resulting in a systematic and comprehensive approach to linear regression modeling.
 
+Logistic Regression: In this project, a logistic regression model is constructed, and a summary of estimates of the regression coefficients, the standard errors of the estimates, and 95% confidence intervals of the coefficients is provided. Moreover, the estimated coefficients of at least two predictors are interpreted and Provided the training error rate for the model.
+
 Discriminant Analysis (LDA, QDA): The GitHub project involves implementing LDA and QDA models using training data to visualize the decision boundaries they create. It also includes computing confusion matrices and overall misclassification rates for both training and test datasets. Finally, the performance of LDA and QDA is compared to assess their strengths and weaknesses in terms of classification accuracy and generalization capabilities.
 
 Resampling Methods (LOOCV, Bootstrap): Understand the significance of resampling methods like Leave-One-Out Cross-Validation (LOOCV) and Bootstrap through projects that emphasize model assessment and validation.
