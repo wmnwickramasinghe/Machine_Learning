@@ -1,6 +1,16 @@
 ---
 title: "k Nearest Neighbors"
-output: html_document
+output: 
+    bookdown::pdf_document2:
+       toc: false
+       number_sections: false
+       extra_dependencies: ["flafter"]
+header-includes: 
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
+urlcolor: blue
+geometry: "left=1cm,right=1cm,top=1.5cm,bottom=1cm"
+always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
