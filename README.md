@@ -4,18 +4,20 @@ Welcome to the R Machine Learning Projects repository, a comprehensive collectio
 
 ## Project Topics:
 
-k-Nearest Neighbors (KNN): In this project on k-Nearest Neighbors (KNN), the model is fitted with varying values of K. The training and test error rates are plotted against K, revealing insights into model performance. The analysis aims to identify the optimal K value, assessing its associated training and test error rates. Additionally, a visual representation of the training data is presented, including the decision boundary for the optimal K, prompting observations and reflections on the model's overall interpretability and performance.
+***k-Nearest Neighbors (KNN)***: In this project on k-Nearest Neighbors (KNN), the model is fitted with varying values of K. The training and test error rates are plotted against K, revealing insights into model performance. The analysis aims to identify the optimal K value, assessing its associated training and test error rates. Additionally, a visual representation of the training data is presented, including the decision boundary for the optimal K, prompting observations and reflections on the model's overall interpretability and performance.
 
-Linear Regression: A comprehensive approach to constructing a reliable linear regression model is the primary focus of this project. It begins with an exploratory analysis of the dataset, followed by the identification of necessary transformations. Subset selection techniques are applied to determine the optimal model, and model assumptions are evaluated to ensure reliability. Finally, the model is utilized for predictive purposes, resulting in a systematic and comprehensive approach to linear regression modeling.
+***Linear Regression***: A comprehensive approach to constructing a reliable linear regression model is the primary focus of this project. It begins with an exploratory analysis of the dataset, followed by the identification of necessary transformations. Subset selection techniques are applied to determine the optimal model, and model assumptions are evaluated to ensure reliability. Finally, the model is utilized for predictive purposes, resulting in a systematic and comprehensive approach to linear regression modeling.
 
-Discriminant Analysis (LDA, QDA): Delve into the projects focusing on Linear Discriminant Analysis (LDA) and Quadratic Discriminant Analysis (QDA) for effective classification in multivariate datasets.
+***Logistic Regression***: In this project, a logistic regression model is constructed, and a summary of estimates of the regression coefficients, the standard errors of the estimates, and 95% confidence intervals of the coefficients is provided. Moreover, the estimated coefficients of at least two predictors are interpreted and Provided the training error rate for the model.
 
-Resampling Methods (LOOCV, Bootstrap): Understand the significance of resampling methods like Leave-One-Out Cross-Validation (LOOCV) and Bootstrap through projects that emphasize model assessment and validation.
+***Discriminant Analysis (LDA, QDA)***: The GitHub project involves implementing LDA and QDA models using training data to visualize the decision boundaries they create. It also includes computing confusion matrices and overall misclassification rates for both training and test datasets. Finally, the performance of LDA and QDA is compared to assess their strengths and weaknesses in terms of classification accuracy and generalization capabilities.
 
-Model Selection and Regularization: Explore the nuances of model selection and regularization techniques, including projects that highlight the importance of balancing model complexity and performance.
+***Resampling Methods (LOOCV, Bootstrap)***: Understand the significance of resampling methods like Leave-One-Out Cross-Validation (LOOCV) and Bootstrap through projects that emphasize model assessment and validation.
 
-Clustering: Dive into projects showcasing clustering algorithms, where unsupervised learning techniques are applied to identify patterns and group similar data points.
+***Model Selection and Regularization***: Explore the nuances of model selection and regularization techniques, including projects that highlight the importance of balancing model complexity and performance.
 
-Tree-Based Methods: Learn about decision trees, random forests, and gradient boosting through projects that harness the power of tree-based methods for classification and regression tasks.
+***Clustering***: Dive into projects showcasing clustering algorithms, where unsupervised learning techniques are applied to identify patterns and group similar data points.
 
-Support Vector Machines (SVM): Discover the capabilities of Support Vector Machines in projects that cover both linear and non-linear classification problems.
+***Tree-Based Methods***: Learn about decision trees, random forests, and gradient boosting through projects that harness the power of tree-based methods for classification and regression tasks.
+
+***Support Vector Machines (SVM)***: Discover the capabilities of Support Vector Machines in projects that cover both linear and non-linear classification problems.
