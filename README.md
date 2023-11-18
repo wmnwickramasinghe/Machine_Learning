@@ -1,5 +1,3 @@
-# Machine_Learning
-
 ## Description:
 
 Welcome to the R Machine Learning Projects repository, a comprehensive collection of projects showcasing the application of various machine learning algorithms using the R programming language. This repository serves as a valuable resource for both beginners and experienced practitioners looking to delve into the world of statistical modeling and predictive analytics.
