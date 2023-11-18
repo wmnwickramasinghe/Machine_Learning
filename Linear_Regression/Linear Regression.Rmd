@@ -73,3 +73,222 @@ pairs(wine[,1:6],col = my_cols[wine$Region],pch=20,upper.panel = panel.cor,diag.
 ```
 
 &nbsp;
+
+b) From **Figure1**  we can see that histogram for variable `Quality` is slightly left skewed. Therefore to explore whether transformation is necessary for variable `Quality` we examine residual plots for multiple linear regression model for `Quality` vs all other predictor variables.
+
+&nbsp;
+
+```{r echo=TRUE}
+full.model<-lm(Quality~.,data=wine)
+```
+
+```{r echo=TRUE}
+#Evaluating model assumptions
+shapiro.test(full.model$residuals)
+bptest(full.model)
+durbinWatsonTest(full.model)
+```
+
+```{r q1b,echo=TRUE,fig.height=2.5, fig.width=8, fig.cap="\\textit{Accesing model assumptions for Quality vs all other predictors}"}
+par(mfrow=c(1,4))
+qqnorm(full.model$residuals, xlab = "Expected value", ylab = "Residual", main = "Normal Probability Plot",pch = 19,cex.lab=0.8,xaxt="n",yaxt="n",cex.main=0.8)
+qqline(full.model$residuals)
+axis(2,cex.axis=0.8)
+axis(1,cex.axis=0.8)
+
+plot(x = full.model$fitted.values, y = full.model$residuals, abline(0,0), xlab = "Fitted Value",ylab = "Residual", main = "Plot of Residuals vs Fitted Values",cex.lab=0.8,xaxt="n",yaxt="n",cex.main=0.8)
+axis(2,cex.axis=0.8)
+axis(1,cex.axis=0.8)
+
+plot(resid(full.model),type = "l", main = "Time series plot",cex.lab=0.8,xaxt="n",yaxt="n",cex.main=0.8)
+abline(h=0)
+axis(2,cex.axis=0.8)
+axis(1,cex.axis=0.8)
+
+plot(full.model,which = 5,caption = "",main="Residuals vs Leverage",cex.lab=0.8,xaxt="n",yaxt="n",cex.main=0.8)
+axis(2,cex.axis=0.8)
+axis(1,cex.axis=0.8)
+```
+
+&nbsp;
+
+**Figure1**  represent residual plots for the multiple linear regression model for `Quality` vs all other predictor variables. 
+
+- From the qqplot we notice that points follow a straight line and the shapirowilks test coincides with the normal QQ plot with pvalue 0.8993> 0.05 implying normality holds.
+- We do not see discernible curve pattern to the residuals vs. fitted plot and Breush-Pagan test with pvalue= 0.3082 > 0.05 indicating constant variance assumption holds.
+- Error terms does shows pattern implying independence of Error Terms.
+- Pvalue for Durbin-Watson test=0.108 > 0.05 imply that autocorrelation does not present in the model. 
+- From cooks distance we can see there is one influential observation and that is 12 th observation.
+
+Model assumption holds for this model and therefore `Quality` is appropriate as a response variable and transformation is not necessary.
+
+&nbsp;
+
+c) For each predictor, simple linear regression model was fitted to predict the response `Quality` and **Table 1** present the P-values for model significance. In the simple linear regression testing for model significance is $H_0:\beta_1=0$ vs $H_1:\beta_1 \neq 0$. All models are significant, except models `Quality` vs `Clarity` and `Quality` vs `Oakiness`. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllll}
+\hline
+Predctor variable & Clarity & Aroma & Body & Flavor & Oakiness  &  Region \\
+\hline
+P-value  &  0.865 & $6.87\times 10^{-7}$ & 0.000361 & 3.68e-09 & 0.7791 & $6.587\times 10^{-8}$ \\
+\hline
+\end{tabular}
+\caption{Summary of results for LDA and QDA}
+\end{table}
+
+&nbsp;
+
+```{r echo=FALSE}
+lm.Clarity = lm(Quality~Clarity,data=wine) 
+summary(lm.Clarity)
+
+lm.Aroma = lm(Quality~Aroma,data=wine) 
+summary(lm.Aroma)
+
+lm.Body = lm(Quality~Body,data=wine) 
+summary(lm.Body)
+
+lm.Flavor = lm(Quality~Flavor,data=wine) 
+summary(lm.Flavor)
+
+lm.Oakiness = lm(Quality~Oakiness,data=wine) 
+summary(lm.Oakiness)
+
+lm.Region = lm(Quality~Region,data=wine) 
+summary(lm.Region)
+```
+
+&nbsp;
+
+d) Multiple regression model to predict the response using all of the predictors. 
+$$Quality= 7.81437 + 0.01705 Clarity + 0.08901 Aroma + 0.07967 Body - 0.34644 Oakiness -1.51285 Region 2 + 0.97259 Region 3 $$
+
+- When testing the significance of j$^{th}$ predictor: i.e $H_0:\beta_j=0$ vs $H_0:\beta_j \neq 0$, we can reject the null hypothesis for predictors `Flavor` and `Region` as there p values $6.25 \times 10^{-5}$ and $2.92 \times 10^{-4}$ respectively < 0.05. Thus we can conclude that each predictor `Flavor` and `Region` is associated with response `Quality` after adjusting for the other predictors. 
+
+- When testing for model significance: i.e $H_0:\beta_1= \dots = \beta_p=0$ vs $H_1:$ atleast one $\beta_j \neq 0$ we reject the null hypothesis and conclude that model is significant as p value = $3.295 \times 10^{-10}$. 
+
+- Adjusted $R^2$ is 0.7997 indicates that approximately 80% proportion of total variation explained by the regression. 
+
+&nbsp;
+
+```{r echo=TRUE}
+full.model<-lm(Quality~.,data=wine)
+summary(full.model)
+
+region.model<-lm(Quality~.-Region,data=wine)
+
+anova(full.model,region.model)
+```
+
+&nbsp;
+
+e) Build a reasonably good multiple regression model for these data.
+
+- First, performance of all possible models were compared using $R^2_{adjusted}, MSE_{p},BIC$ and Mallows' $C_p$. According to the plots of $R^2_{adjusted}, MSE_{p},BIC$ and Mallows' $C_p$ vs number of variables, only 3 variables are enough to explain the model as after 3 variables there is no much variation added to the model. 
+
+- Next, stepwise selection was carried out and variables `Flavor`, `Oakiness` and `Region` identified as the most important predictors. Although variable `Oakiness` was selected using stepwise method, it is not significant in the model `Quality` vs `Flavor`, `Oakiness` and `Region`. Moreover it does not add much of the variation to the model as $R^2_{adjusted}$ for model with `Oakiness` and without it is 0.8164 and 0.8087 respectively. Therefore variables `Flavor` and `Region` used for the final model.
+
+- Then look for the pairwise interactions between `Flavor` and `Region` and it is  not significant as pvalue=0.3378 > 0.05. 
+
+- **Figure**  represent residual plots for the multiple linear regression model for `Quality` vs vs `Flavor` and `Region`. Model assumptions holds for this model. From the qqplot we notice that points follow a straight line and the shapirowilks test coincides with the normal QQ plot with pvalue 0.9577 > 0.05 implying normality holds.We do not see discernible curve pattern to the residuals vs. fitted plot and Breush-Pagan test with pvalue= 0.3817 > 0.05 indicating constant variance assumption holds.Error terms does not shows pattern implying independence of Error Terms. Pvalue for Durbin-Watson test=0.148 > 0.05 imply that autocorrelation does not present in the model.
+
+&nbsp;
+
+```{r echo=TRUE}
+#perfoarming stepwise regression
+step.lm <- step(full.model,direction = "both",trace=FALSE)
+summary(step.lm)
+```
+
+```{r echo=TRUE}
+library(leaps)
+regfit = regsubsets(Quality~.,data=wine) #full model
+regsumm = summary(regfit)
+regsumm
+```
+
+```{r echo=TRUE}
+#Plot of Variable selection criteria with all variables.
+# need to compare the performance of the different models for choosing the best number of variables for reduce model
+par(mfrow = c(2,2))
+plot(regsumm$rss, xlab = "Number of Variables", ylab = "RSS", type ="l")
+plot(regsumm$adjr2, xlab = "Number of Variables", ylab = "Adjusted R^2", type ="l")
+plot(regsumm$cp, xlab = "Number of Variables", ylab = "Mallow C", type ="l")
+plot(regsumm$bic, xlab = "Number of Variables", ylab = "BIC", type ="l")
+par(mfrow = c(1,1))
+```
+
+```{r echo=TRUE}
+#evaluating interactions
+m1<-lm(Quality~Flavor+Region,data = wine)
+m2<-lm(Quality~Flavor+Region+Flavor*Region,data = wine)
+
+anova(m1,m2)
+```
+
+```{r echo=TRUE}
+#final model
+Reduce.model<-lm(Quality~Flavor+Region,data = wine)
+summary(Reduce.model)
+```
+
+```{r echo=TRUE}
+#Evaluating model assumptions
+shapiro.test(Reduce.model$residuals)
+bptest(Reduce.model)
+durbinWatsonTest(Reduce.model)
+```
+
+```{r q1f, echo=TRUE, fig.cap="\\textit{Accesing model assumptions for Quality vs Flavor and region}", fig.height=2.5, fig.width=8}
+#model assumptions
+par(mfrow=c(1,4))
+qqnorm(Reduce.model$residuals, xlab = "Expected value", ylab = "Residual", main = "Normal Probability Plot",pch = 19,cex.lab=0.8,xaxt="n",yaxt="n",cex.main=0.8)
+qqline(Reduce.model$residuals)
+axis(2,cex.axis=0.8)
+axis(1,cex.axis=0.8)
+
+plot(x = Reduce.model$fitted.values, y = Reduce.model$residuals, abline(0,0), xlab = "Fitted Value",ylab = "Residual", main = "Plot of Residuals vs Fitted Values",cex.lab=0.8,xaxt="n",yaxt="n",cex.main=0.8)
+axis(2,cex.axis=0.8)
+axis(1,cex.axis=0.8)
+
+plot(resid(Reduce.model),type = "l", main = "Time series plot",cex.lab=0.8,xaxt="n",yaxt="n",cex.main=0.8)
+abline(h=0)
+axis(2,cex.axis=0.8)
+axis(1,cex.axis=0.8)
+
+plot(Reduce.model,which = 5,caption = "",main="Residuals vs Leverage",cex.lab=0.8,xaxt="n",yaxt="n",cex.main=0.8)
+axis(2,cex.axis=0.8)
+axis(1,cex.axis=0.8)
+```
+
+&nbsp;
+
+f) final model:
+$$Quality= 7.0943 + 1.1155Flavor - 1.5335Region2+ 1.2234 Region3$$
+Adjusted R-squared:  0.8087 and p-value: 6.358e-13 < 0.05 $\Rightarrow$ model is significant. Moreover p values for testing $H_0:\beta_j=0$ vs $H_0:\beta_j \neq 0$ are $2.49 \times 10^{-7},2.46 \times 10^{-6}$ for `Flavor` and `Quality` respectively $\Rightarrow$ that each predictor is significant .
+
+&nbsp;
+
+```{r echo=TRUE}
+anova(Reduce.model,lm(Quality~Flavor,data=wine))
+```
+
+&nbsp;
+
+g) `Quality` of a wine from `Region 1` with `Flavor` equal to its mean value (4.7684) is 12.4137.
+
+- 95% Prediction interval : (10.53775,14.28967). Thus we can be 95% confident that this new observation will fall within (10.53775,14.28967) 
+- 95% Confidence interval : (11.95152,12.8756). Thus We can be 95% confident that the average  `Quality` of a wine from `Region 1` with `Flavor` equal to its mean value is between 11.95152 and 12.8756.
+
+&nbsp;
+
+```{r echo=TRUE}
+newdat<-data.frame(Flavor=mean(wine$Flavor),Region="1")
+predict(Reduce.model,newdat)
+
+predict(Reduce.model, newdata = newdat, interval = "prediction",level=0.95)
+predict(Reduce.model, newdata = newdat, interval = "confidence",level=0.95)
+```
+
