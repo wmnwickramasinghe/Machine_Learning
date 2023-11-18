@@ -4,7 +4,7 @@ Welcome to the R Machine Learning Projects repository, a comprehensive collectio
 
 ## Project Topics:
 
-k-Nearest Neighbors (KNN): Explore projects demonstrating the power and flexibility of KNN in classification and regression tasks, leveraging proximity-based learning.
+k-Nearest Neighbors (KNN): In this project on k-Nearest Neighbors (KNN), the model is fitted with varying values of K. The training and test error rates are plotted against K, revealing insights into model performance. The analysis aims to identify the optimal K value, assessing its associated training and test error rates. Additionally, a visual representation of the training data is presented, including the decision boundary for the optimal K, prompting observations and reflections on the model's overall interpretability and performance.
 
 Logistic and Linear Regression: Gain insights into logistic and linear regression through practical projects that cover topics such as binary classification, probability estimation, and linear relationships.
 
