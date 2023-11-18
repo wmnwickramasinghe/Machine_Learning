@@ -1,0 +1,75 @@
+---
+title: "Linear Regression"
+output: 
+    bookdown::pdf_document2:
+       toc: false
+       number_sections: false
+       extra_dependencies: ["flafter"]
+header-includes: 
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
+  - \usepackage{subfig}
+  - \usepackage{graphicx}
+  - \usepackage{multicol}
+  - \newcommand{\btwocol}{\begin{multicols}{2}}
+  - \newcommand{\etwocol}{\end{multicols}}
+urlcolor: blue
+geometry: "left=1cm,right=1cm,top=1cm,bottom=1.5cm"
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,comment="", message=FALSE, warning = FALSE)
+```
+
+**Consider the wine data. The data come from a study of Pinot Noir
+wine quality. The dataset contains 38 observations and 7 variables: Quality, Clarity, Aroma, Body, Flavor, Oakiness, and Region. The goal is to develop a model that relates the quality of Pinot Noir with its features. The model can potentially be used to predict the quality of the wine.**
+
+&nbsp;
+
+a) **Figure** represent the Scatterplot matrix for wine data. There is a strong positive correlation between response variable `Quality` and predictor variables `Flavor` and `Aroma`, moderate correlation between `Quality` and `Body`. Moreover, there is a strong positive correlation between predictor variables `Aroma` and `Flavor` and `Body` and `Flavor`.
+
+&nbsp;
+
+```{r}
+library(car)
+library(lmtest)
+library(ggplot2)
+
+wine<-read.table("wine.txt",header = TRUE)
+#View(wine)
+wine$Region<-as.factor(wine$Region)
+str(wine)
+
+cor(wine[1:6])
+
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
+  usr <- par("usr")
+  on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- abs(cor(x, y, use = "complete.obs"))
+  txt <- format(c(r, 0.123456789), digits = digits)[1]
+  txt <- paste(prefix, txt, sep = "")
+  if (missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+  text(0.5, 0.5, txt, cex =  cex.cor * (1 + r) / 2)
+}
+
+panel.hist <- function(x, ...) {
+  usr <- par("usr")
+  on.exit(par(usr))
+  par(usr = c(usr[1:2], 0, 1.5) )
+  h <- hist(x, plot = FALSE)
+  breaks <- h$breaks
+  nB <- length(breaks)
+  y <- h$counts
+  y <- y/max(y)
+  rect(breaks[-nB], 0, breaks[-1], y,  ...)
+}
+
+#Scatter plot matrix for wine data
+my_cols <- c("#00AFBB", "#E7B800", "#FC4E07")
+pairs(wine[,1:6],col = my_cols[wine$Region],pch=20,upper.panel = panel.cor,diag.panel  = panel.hist,oma=c(2,2,2,2))
+
+```
+
+&nbsp;
