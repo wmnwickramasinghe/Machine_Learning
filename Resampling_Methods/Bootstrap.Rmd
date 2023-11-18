@@ -27,13 +27,18 @@ knitr::opts_chunk$set(
 )
 ```
 
+***Consider the oxygen saturation data stored in oxygen_saturation.txt. The data consist of measurements of percent saturation of hemoglobin with oxygen in 72 adults, obtained using an oxygen saturation monitor (OSM, method 1) and a pulse oximetry screener (POS, method 2). We are primarily interested in evaluating agreement between the two methods for measuring oxygen saturation.***
+
+
+a)  **Figure** \@ref(fig:q3a) Left shows the Scatter plot of the oxygen saturation data. Points in the scatterplot fell on approximately $45^0$ line. Therefore we can say that there is a reasonable agreement between two methods of oxygen saturation data. **Figure** \@ref(fig:q3a) Right shows the boxplot of absolute values of differences in the measurements. Mean for the boxplot is around 1(whcih is near to zero)  and values does not have much deviations from 1.Therefore we can say that there is a reasonable agreement between two methods of oxygen saturation data.
+
+&nbsp;
+
 ```{r echo=TRUE}
 oxy.sat<-read.table("oxygen_saturation.txt",header = T)
 ```
 
-a)  **Figure** \@ref(fig:q3a) Left shows the Scatter plot of the oxygen saturation data. Points in the scatterplot fell on approximately $45^0$ line. Therefore we can say that there is a reasonable agreement between two methods of oxygen saturation data. **Figure** \@ref(fig:q3a) Right shows the boxplot of absolute values of differences in the measurements. Mean for the boxplot is around 1(whcih is near to zero)  and values does not have much deviations from 1.Therefore we can say that there is a reasonable agreement between two methods of oxygen saturation data.
-
-```{r q3a,echo=FALSE,fig.height=3, fig.width=6, fig.cap="\\textit{Left}: Scatter plot of the oxygen saturation data. \\textit{Right}: Boxplot of absolute values of differences in the measurements"}
+```{r q3a,echo=TRUE,fig.height=3, fig.width=6, fig.cap="\\textit{Left}: Scatter plot of the oxygen saturation data. \\textit{Right}: Boxplot of absolute values of differences in the measurements"}
 #part a)
 par(mfrow=c(1,2))
 par(mar = c(3.8, 3.8, 1,1))
@@ -50,14 +55,34 @@ axis(1,cex.axis=0.8)
 
 ```
 
+&nbsp;
+
 b) Let $Y_1$ and $Y_2$ denote the population of observations of methods 1 and 2, respectively, and $D = Y_1-Y_2$ denote their difference. Let $\theta$ be the total deviation index (TDI) between the two methods. For a given large probability $p$, it is defined as the $p^{th}$ quantile of $|D|$. Note that the methods would have perfect agreement if all the differences were zero. For a given large probability $p$, smaller values for $p^{th}$ quantile of $|D|$ imply that most of the differences(if $p=0.9$ then $90\%$ of differences) are closer to 0. Therefore that smaller values for $\theta$ imply better agreement.
+
+&nbsp;
 
 c) If the population parameter is a quantile, sample quantile should be its natural estimator. Therefore $\hat{\theta}= 2$.
 
-d) Code to compute (nonparametric) bootstrap estimates of bias and standard error
-and a $95\%$ upper confidence bound for $\hat{\theta}$ computed using the percentile method. Results are presented in table 5.
+&nbsp;
 
-```{r}
+d) Code to compute (nonparametric) bootstrap estimates of bias and standard error and a $95\%$ upper confidence bound for $\hat{\theta}$ computed using the percentile method. Results are presented in table 5.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllll}
+\hline
+ & $\hat{\eta}^*$ & bias & Standard error & $95\%$ upper confidence bound\\
+\hline
+Using my code &  2.1900  & 0.0021 &  0.1308 & 2.2000\\
+Using `boot` package &  2.1900 & 0.0048 &  0.1257 & 2.2000\\
+\hline
+\end{tabular}
+\caption{Summary statistics for bootstrap estimates}
+\end{table}
+
+&nbsp;
+
+```{r echo=TRUE}
 oxy.diff<-abs(oxy.sat$pos-oxy.sat$osm)
 theta.hat = quantile(oxy.diff,prob=c(0.9))
 
@@ -76,21 +101,11 @@ std.err.theta.hat = sd(bs_theta)
 qauntile.theta.hat = quantile(bs_theta,probs = c(0.025,0.975))
 ```
 
-\begin{table}[H]
-\centering
-\begin{tabular}{lllll}
-\hline
- & $\hat{\eta}^*$ & bias & Standard error & $95\%$ upper confidence bound\\
-\hline
-Using my code &  2.1900  & 0.0021 &  0.1308 & 2.2000\\
-Using `boot` package &  2.1900 & 0.0048 &  0.1257 & 2.2000\\
-\hline
-\end{tabular}
-\caption{Summary statistics for bootstrap estimates}
-\end{table}
-
+&nbsp;
 
 e) Code to compute (nonparametric) bootstrap estimates using `boot` package. Results are presented in table 5.
+
+&nbsp;
 
 ```{r echo=TRUE}
 quantile.fn <- function(x, indices) {
@@ -104,5 +119,7 @@ quantile.boot <- boot(oxy.diff, quantile.fn, R = 1000)
 eta.hat.star.boot = quantile(quantile.boot$t,probs = c(0.9))
 bootCI= boot.ci(quantile.boot, type = "perc")
 ```
+
+&nbsp;
 
 f) Both codes gives close results. Therefore methods agree well enough to be used interchangeably in practice.
