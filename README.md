@@ -14,9 +14,11 @@ Welcome to the R Machine Learning Projects repository, a comprehensive collectio
 
 ***Resampling Methods (LOOCV, Bootstrap)***: Understand the significance of resampling methods like Leave-One-Out Cross-Validation (LOOCV) and Bootstrap through projects that emphasize model assessment and validation.
 
-***Model Selection and Regularization***: Explore the nuances of model selection and regularization techniques, including projects that highlight the importance of balancing model complexity and performance.
+***Model Selection and Regularization***: Explore the nuances of model selection and regularization techniques, including projects that highlight the importance of balancing model complexity and performance. 
 
 ***Clustering***: Dive into projects showcasing clustering algorithms, where unsupervised learning techniques are applied to identify patterns and group similar data points.
+
+***Dimensionality Reduction*** Our project explores the use of dimensionality reduction techniques, including Principal Component Analysis (PCA), Principal Component Regression (PCR), and Partial Least Squares Regression (PLS). We identify critical variables, reduce data dimensionality, and model relationships between variables.
 
 ***Tree-Based Methods***: Learn about decision trees, random forests, and gradient boosting through projects that harness the power of tree-based methods for classification and regression tasks.
 
