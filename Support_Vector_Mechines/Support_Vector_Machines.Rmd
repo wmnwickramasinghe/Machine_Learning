@@ -1,0 +1,126 @@
+---
+title: "Support Vector Mechine"
+output: 
+    bookdown::pdf_document2:
+       toc: false
+       number_sections: false
+       extra_dependencies: ["flafter"]
+header-includes: 
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
+  - \usepackage{subfig}
+  - \usepackage{graphicx}
+  - \usepackage{multicol}
+  - \newcommand{\btwocol}{\begin{multicols}{2}}
+  - \newcommand{\etwocol}{\end{multicols}}
+urlcolor: blue
+geometry: "left=1cm,right=1cm,top=1cm,bottom=1.5cm"
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = ""
+)
+```
+
+***Consider the diabetes dataset. As there, we will take Outcome as
+the binary response, the remaining 8 variables as predictors, and all the data as training data. For all the models below, use 10-fold cross-validation to compute the estimated test error rates and also
+to tune any hyperparameter that requires tuning.***
+
+a) Support vector classifier was fitted with cost parameter chosen optimally via tuning. Misclassification rate using LOOCV is reported in Table 2. 
+- Optimal cost value is chosen as 4.6.
+- Number of Support Vectors:  1051  (without diabities: 524 and with diabities: 527)
+
+&nbsp;
+
+```{r echo=TRUE}
+library(e1071)
+library(ISLR)
+
+diab<-read.csv("diabetes.csv")
+head(diab)
+diab$Outcome<-as.factor(diab$Outcome)
+names(diab)<-c("Pregnancies","Glucose","BP","Thickness","Insulin","BMI","DPB","Age","Outcome")
+str(diab)
+```
+
+```{r, include=FALSE, echo=TRUE}
+ # Fit SV classifiers and perform cross-validation (default: 10-fold CV)
+set.seed(1)
+tune.out <- tune(svm, Outcome ~ ., data = diab, kernel = "linear", 
+                 ranges = list(cost = c( 4,4.2,4.4,4.5,4.6,4.7,4.8,5,5.2)), scale = TRUE)
+summary(tune.out$best.model)
+```
+
+
+```{r, echo=TRUE}
+# Calculating misclassification rate using 10 fold cv
+set.seed(1)
+svmfit <- svm(Outcome ~ ., data = diab, kernel = "linear", cost = 4.6, scale = TRUE,cross=10)
+summary(svmfit)
+```
+
+&nbsp;
+
+b) Support vector machine with a polynomial kernel of degree two was fitted with cost parameter chosen optimally via tuning. Misclassification rate using LOOCV is reported in Table 2. 
+- Optimal cost value is chosen as 4.9.
+- Number of Support Vectors:  1055  (without diabities: 527 and with diabities: 528)
+
+&nbsp;
+  
+```{r, echo=TRUE, cache=TRUE}
+ # Fit SV classifiers and perform cross-validation (default: 10-fold CV)
+set.seed(1)
+tune.out.pol <- tune(svm, Outcome ~ ., data = diab, kernel = "polynomial",degree=2,
+                 ranges = list(cost = c(4.6,4.7,4.8,4.9,5,5.1,5.2,5.3,5.5,6)), scale = TRUE)
+summary(tune.out.pol$best.model)
+```
+
+```{r echo=TRUE}
+# Calculating misclassification rate using 10 fold cv
+set.seed(1)
+svmfit1 <- svm(Outcome ~ ., data = diab, kernel = "polynomial",degree=2, cost = 4.9, scale = TRUE,cross=10)
+summary(svmfit1)
+```
+
+&nbsp;
+
+c) Support vector machine with radial kernel was fitted with cost parameter chosen optimally via tuning. Misclassification rate using LOOCV is reported in Table 2. 
+- Optimal $\gamma$ value is chosen as 4.5 as for any cost value $\gamma=4.5$ gives the lowest misclassification rate. 
+- Optimal cost value is chosen as 0.8.
+- Number of Support Vectors:  1024  (without diabities: 507 and with diabities: 517)
+
+&nbsp;
+
+```{r, echo=TRUE,cache=TRUE}
+set.seed(1)
+tune.out.rad <- tune(svm, Outcome ~ ., data = diab, kernel = "radial", 
+	ranges = list(cost = c(0.5,0.6,0.7,0.8,0.9,1,1.1,1.2), gamma = 4.5))
+summary(tune.out.rad$best.model)
+```
+
+```{r, echo=TRUE}
+svmfit2 <- svm(Outcome ~ ., data = diab, kernel = "radial", cost = 0.8, gamma = 4.5, cross=10)
+summary(svmfit2)
+```
+
+&nbsp;
+
+d) Support vector machine with radial kernel gives the lowest misclassification rate and support vector machine with polynomial gives the highest misclassification rate. Therfore I would recommend Support vector machine with radial kernel. According to the previous project I recommended knn with k=6 as the best model as it had the lowest misclassification rate of 0.1665. However Support vector machine with radial kernel seems better than knn as it has the lower misclassification rate. Therefore, I would recommend Support vector machine with radial kernel. 
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\hline
+ & svm linear &  svm polynomial & svm radial\\
+\hline
+misclassification rate & 0.2255  & 0.2690 & 0.012  \\
+\hline
+\end{tabular}
+\caption{\textit{Summary of misclassification}}
+\end{table}

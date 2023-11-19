@@ -1,0 +1,197 @@
+---
+title: "Tree Based Methods"
+output: 
+    bookdown::pdf_document2:
+       toc: false
+       number_sections: false
+       extra_dependencies: ["flafter"]
+header-includes: 
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
+  - \usepackage{subfig}
+  - \usepackage{graphicx}
+  - \usepackage{multicol}
+  - \newcommand{\btwocol}{\begin{multicols}{2}}
+  - \newcommand{\etwocol}{\end{multicols}}
+urlcolor: blue
+geometry: "left=1cm,right=1cm,top=1cm,bottom=1.5cm"
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = ""
+)
+```
+
+******Consider the Hitters dataset from the ISLR package in R. It consists of 20 variables measured on 263 major league baseball players (after removing those with missing data). Salary is the response variable and the remaining 19 are predictors. All data will
+be taken as training data. For all the models below, use leave-one-out cross-validation (LOOCV) to compute the estimated test MSE.***
+
+a) Tree was fitted to Hitters data. Test MSE using LOOCV is reported in Table 1.  
+
+- Variables actually used in tree construction: `CAtBat`, `CHits`, `AtBat`, `CRuns`, `Hits`, `Walks`, `CRBI`.
+- Number of terminal nodes:  9
+- Residual mean deviance:  0.1694 = 43.03 / 254.
+
+$$
+\begin{aligned}
+R_1 &=\{X|CAtBat < 1452,CHits < 182, AtBat < 147\}\\
+R_2 &=\{X|CAtBat < 1452,CHits < 182, AtBat \geq 147, CRuns < 58.5 \}\\
+R_3 &=\{X|CAtBat < 1452,CHits < 182, AtBat \geq 147, CRuns \geq 58.5 \}\\
+R_4 &=\{X|CAtBat < 1452,CHits \geq 182\}\\
+R_5 &=\{X|CAtBat \geq 1452,Hits < 117.5, Walks < 43.5\}\\
+R_6 &=\{X|CAtBat \geq 1452,Hits < 117.5, Walks \geq 43.5\}\\
+R_7 &=\{X|CAtBat \geq 1452,Hits \geq 117.5, CRBI < 273\}\\
+R_8 &=\{X|CAtBat \geq 1452,Hits \geq 117.5, CRBI \geq 273, Walks< 60.5\}\\
+R_9 &=\{X|CAtBat \geq 1452,Hits \geq 117.5, CRBI \geq 273, Walks\geq 60.5\}\\
+\end{aligned}
+$$
+
+&nbsp;
+
+```{r echo=TRUE}
+library(ISLR)
+Hitters.n <- na.omit(Hitters)
+Hitters.n$Salary<- log(Hitters.n$Salary)
+```
+
+```{r echo=TRUE}
+# Grow a tree using the training set
+library(tree)
+tree.Hitters <- tree(Salary ~ ., Hitters.n)
+tree.Hitters
+summary(tree.Hitters)
+```
+
+```{r q1a,echo=TRUE,fig.height=3, fig.width=6, fig.cap="\\textit{Tree for Hitters Data}"}
+par(mar = c(3.8, 3.8,1,1))
+plot(tree.Hitters)
+text(tree.Hitters, pretty = 0, cex=0.7)
+```
+
+<!-- # Get predictions on the test data -->
+
+```{r, echo=TRUE}
+# LOOCV for calculating MSE
+loocv.tree<-function(i)
+{
+  test<-Hitters.n[i,]
+  training<-Hitters.n[-i,]
+  model<-tree(Salary ~ ., training)
+  yhat <- predict(model, newdata = test)
+  err<-(yhat - test[, "Salary"])^2
+  return(err)
+}
+K<-nrow(Hitters.n)
+RSS1a <- sapply(1:K, FUN = loocv.tree)
+MSE1a <- mean(RSS1a)
+```
+
+&nbsp;
+
+b) After pruning tree we will get lowest dev value(69.13) for tree with size 9 and selected it as the best pruned tree.  Therefore there is no difference between the best pruned and un_pruned tree. Test MSE using LOOCV is reported in Table 1. The most important predictors are `CAtBat`, `CHits`, `AtBat`, `CRuns`, `Hits`, `Walks`, `CRBI` as best tree only used these predictors when construction. Out of these variables, 'CAtbat' seems to be the most important as the first split is based on this variable. Test MSE using LOOCV is reported in Table 1. 
+
+&nbsp;
+
+```{r echo=TRUE}
+# Pruning tree using LOOCV
+set.seed(1)
+cv.Hitters <- cv.tree(tree.Hitters, K=nrow(Hitters.n))
+cv.Hitters
+which.min(cv.Hitters$size)
+```
+
+&nbsp;
+
+c) Bagging approach was carried out to analyze Hitters data. For large B, OOB $\approx$ LOOCV. Therefore OOB error given in the `randomForest()` was taken as LOOCV test error rate. According to  total decrease in node impurities `CAtBat` is the most important variable followed by `CRuns` and `CHits`. Test MSE using LOOCV is reported in Table 1. 
+
+&nbsp;
+
+```{r echo=TRUE}
+# part c)
+
+# Bagging 
+library(randomForest)
+
+set.seed(1)
+bag.Hitters <- randomForest(Salary ~ ., data = Hitters.n, mtry = 19, ntree = 1000, importance = TRUE)
+bag.Hitters
+
+# Estimate test error rate
+yhat.bag <- predict(bag.Hitters)
+mean((yhat.bag - Hitters.n$Salary)^2)
+
+importance(bag.Hitters)
+```
+
+```{r q1c, echo=TRUE, fig.cap="\\textit{VarImp plot for bagging approach}", fig.height=2.8, fig.width=7}
+par(mar = c(3.8, 3.8,4,1))
+varImpPlot(bag.Hitters,main="",cex=0.7)
+```
+
+&nbsp;
+
+d) Random Forest approach was carried out to analyze Hitters data. For large B, OOB $\approx$ LOOCV. Therefore OOB error given in the `randomForest()` was taken as LOOCV test error rate. According to  total decrease in node impurities `CAtBat` is the most important variable followed by `CHits`, `CRuns`, `CWalks` and `CRBI`. Test MSE using LOOCV is reported in Table 1. 
+
+&nbsp;
+
+```{r, echo=TRUE}
+# part d)
+
+# Random Forest
+set.seed(1)
+rf.Hitters <- randomForest(Salary ~ ., data = Hitters.n, mtry = 19/3, ntree = 1000, importance = TRUE)
+rf.Hitters
+
+# Estimate test error rate
+yhat.rf <- predict(rf.Hitters)
+mean((yhat.rf - Hitters.n$Salary)^2)
+
+importance(rf.Hitters)
+```
+
+```{r q1d, echo=TRUE, fig.cap="\\textit{VarImp plot for random forest approach}", fig.height=2.8, fig.width=7}
+par(mar = c(3.8, 3.8,4,1))
+varImpPlot(rf.Hitters,main="",cex=0.7)
+```
+
+&nbsp;
+
+e) Boosting approach was carried out to analyze Hitters data. According to relative influence `CAtBat` is the most important variable followed by `CHits`, `CRuns`,`CRBI` and `CWalks`. Test MSE using LOOCV is reported in Table 1. 
+
+&nbsp;
+
+```{r, echo=TRUE}
+library(gbm)
+# Fit a boosted regression tree
+set.seed(1)
+boost.Hitters <- gbm(Salary ~ ., data = Hitters.n, distribution = "gaussian", 
+	n.trees = 1000, interaction.depth = 1, shrinkage = 0.01, cv.folds = nrow(Hitters.n) )
+
+yhat.boost <- predict(boost.Hitters)
+mean((yhat.boost -  Hitters.n$Salary)^2)
+```
+
+```{r echo=TRUE}
+summary(boost.Hitters)
+```
+
+&nbsp;
+
+f) According to test MSE Boosting method seems the best as it has the lowest test MSE.  Then random forest and bagging seems best as they have the next lowest MSE respectively. However there is not much difference between these two. Therefore, I would recommend boosting as the best method. According to the previous project I recommended Ridge regression model as it had the lowest MSE of 0.3607. However boosting approach for decision trees seems better than Ridge regression as trees has the lower MSE (0.1541) than Ridge regression model. Therefore, I would recommend boosting as the best method. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrr}
+\hline
+ & tree &  pruned tree & bagging &  random forest & boosting\\
+\hline
+Test MSE & 0.2545  & 0.2545 &  0.1878 & 0.1802 & 0.1541 \\
+\hline
+\end{tabular}
+\caption{\textit{Summary of test MSE}}
+\end{table}
+
